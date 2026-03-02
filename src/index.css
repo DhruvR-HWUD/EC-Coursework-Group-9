@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 42 25% 96%;
+    --foreground: 150 15% 12%;
+
+    --card: 40 20% 98%;
+    --card-foreground: 150 15% 12%;
+
+    --popover: 40 20% 98%;
+    --popover-foreground: 150 15% 12%;
+
+    --primary: 152 40% 28%;
+    --primary-foreground: 45 20% 95%;
+
+    --secondary: 38 35% 88%;
+    --secondary-foreground: 152 25% 18%;
+
+    --muted: 40 18% 90%;
+    --muted-foreground: 150 8% 45%;
+
+    --accent: 148 25% 70%;
+    --accent-foreground: 152 30% 15%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 38 20% 85%;
+    --input: 38 20% 85%;
+    --ring: 152 40% 28%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 40 20% 97%;
+    --sidebar-foreground: 150 10% 25%;
+    --sidebar-primary: 152 40% 28%;
+    --sidebar-primary-foreground: 45 20% 95%;
+    --sidebar-accent: 38 30% 92%;
+    --sidebar-accent-foreground: 152 25% 18%;
+    --sidebar-border: 38 20% 85%;
+    --sidebar-ring: 152 40% 28%;
+
+    --verde-leaf: 148 35% 42%;
+    --verde-sage: 145 20% 75%;
+    --verde-sand: 35 40% 92%;
+    --verde-cream: 42 30% 96%;
+    --verde-earth: 25 30% 35%;
+  }
+
+  .dark {
+    --background: 150 15% 8%;
+    --foreground: 40 20% 92%;
+
+    --card: 150 12% 12%;
+    --card-foreground: 40 20% 92%;
+
+    --popover: 150 12% 12%;
+    --popover-foreground: 40 20% 92%;
+
+    --primary: 148 35% 50%;
+    --primary-foreground: 150 15% 8%;
+
+    --secondary: 38 15% 20%;
+    --secondary-foreground: 40 20% 92%;
+
+    --muted: 150 10% 18%;
+    --muted-foreground: 40 10% 60%;
+
+    --accent: 148 20% 30%;
+    --accent-foreground: 40 20% 92%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 150 10% 20%;
+    --input: 150 10% 20%;
+    --ring: 148 35% 50%;
+
+    --sidebar-background: 150 12% 10%;
+    --sidebar-foreground: 40 15% 85%;
+    --sidebar-primary: 148 35% 50%;
+    --sidebar-primary-foreground: 150 15% 8%;
+    --sidebar-accent: 150 10% 16%;
+    --sidebar-accent-foreground: 40 15% 85%;
+    --sidebar-border: 150 10% 18%;
+    --sidebar-ring: 148 35% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .verde-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--verde-leaf)));
+  }
+
+  .verde-gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--verde-leaf)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .verde-sand-bg {
+    background-color: hsl(var(--verde-sand));
+  }
+
+  .verde-card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+}
