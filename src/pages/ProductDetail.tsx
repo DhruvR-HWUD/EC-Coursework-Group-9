@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { getProductById } from '@/data/products';
+import { useInventory } from '@/contexts/InventoryContext';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, Truck, Store, Leaf, ArrowLeft, Check } from 'lucide-react';
@@ -8,7 +8,8 @@ import { toast } from 'sonner';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
-  const product = getProductById(id || '');
+  const { products } = useInventory();
+  const product = products.find(p => p.id === id);
   const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState('');
 
@@ -40,10 +41,21 @@ export default function ProductDetail() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Image */}
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: product.color }}>
-          <div className="aspect-square flex items-center justify-center p-8">
-            <span className="font-heading text-2xl text-foreground/50 text-center">{product.name}</span>
-          </div>
+        <div
+          className="rounded-xl overflow-hidden flex items-center justify-center"
+          style={{ backgroundColor: product.color }}
+        >
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full aspect-square object-cover"
+            />
+          ) : (
+            <div className="aspect-square flex items-center justify-center p-8">
+              <span className="font-heading text-2xl text-foreground/50 text-center">{product.name}</span>
+            </div>
+          )}
         </div>
 
         {/* Details */}

@@ -17,6 +17,9 @@ export default function Index() {
 
   return (
     <div>
+      <div className="verde-gradient text-primary-foreground text-center py-2 px-4 text-sm font-body tracking-wide">
+        🌿 Use code <span className="font-semibold">WELCOME10</span> for 10% off your first order — Online & In-Store
+      </div>
       {/* Hero Section */}
       <section className="relative h-[70vh] min-h-[500px] overflow-hidden">
         <img
@@ -47,7 +50,7 @@ export default function Index() {
                 <Button variant="outline" size="lg" className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20">
                   Join EcoWardrobe
                 </Button>
-              </Link>
+              </Link> 
             </div>
           </div>
         </div>

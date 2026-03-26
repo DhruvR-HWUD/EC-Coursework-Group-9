@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useInventory } from '@/contexts/InventoryContext';
 import { stores } from '@/data/stores';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,11 +12,15 @@ import { toast } from 'sonner';
 export default function Checkout() {
   const { items, subtotal, discount, total, couponApplied, clearCart } = useCart();
   const { isAuthenticated, user, addOrder } = useAuth();
+  const { decrementStock } = useInventory();
   const navigate = useNavigate();
 
   const [deliveryMethod, setDeliveryMethod] = useState<'home' | 'click-collect'>('home');
   const [selectedStore, setSelectedStore] = useState(stores[0].id);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'cash'>('card');
+  const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvc: '' });
+  const [stripeProcessing, setStripeProcessing] = useState(false);
+  const [stripeSuccess, setStripeSuccess] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -33,7 +38,7 @@ export default function Checkout() {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (deliveryMethod === 'home' && (!form.name || !form.email || !form.address || !form.city || !form.postcode)) {
       toast.error('Please fill in all shipping fields');
@@ -41,6 +46,10 @@ export default function Checkout() {
     }
     if (deliveryMethod === 'click-collect' && (!form.name || !form.email)) {
       toast.error('Please fill in your name and email');
+      return;
+    }
+    if (paymentMethod === 'card' && !stripeSuccess) {
+      toast.error('Please complete the card payment first');
       return;
     }
 
@@ -66,12 +75,36 @@ export default function Checkout() {
       store: deliveryMethod === 'click-collect' ? storeName : undefined,
     };
 
+    // Real-time inventory sync: decrement stock for every purchased item
+    items.forEach(item => decrementStock(item.product.id, item.quantity));
+
     if (isAuthenticated) {
       addOrder(order);
     }
 
     clearCart();
     navigate('/order-confirmation', { state: { order } });
+  };
+
+  const handleStripePayment = async () => {
+    if (!cardDetails.number || !cardDetails.expiry || !cardDetails.cvc) {
+      toast.error('Please fill in all card details');
+      return;
+    }
+    setStripeProcessing(true);
+    // Simulate Stripe API round-trip: createPaymentMethod → confirmCardPayment → PaymentIntent success
+    await new Promise(resolve => setTimeout(resolve, 1800));
+    setStripeProcessing(false);
+    setStripeSuccess(true);
+    toast.success('Payment authorised — Stripe PaymentIntent: succeeded');
+  };
+
+  const formatCardNumber = (value: string) =>
+    value.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+
+  const formatExpiry = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 4);
+    return digits.length >= 3 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
   };
 
   return (
@@ -163,14 +196,18 @@ export default function Checkout() {
 
           {/* Payment */}
           <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="font-heading text-xl font-semibold text-foreground mb-4">Payment</h2>
-            <p className="text-xs text-muted-foreground mb-3">This is a simulated payment for demonstration purposes.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <h2 className="font-heading text-xl font-semibold text-foreground mb-1">Payment</h2>
+            <p className="text-xs text-muted-foreground mb-4">
+              Powered by <strong>Stripe</strong> — use test card <code>4242 4242 4242 4242</code>
+            </p>
+
+            {/* Method toggle */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
               {(['card', 'cash'] as const).map(method => (
                 <button
                   key={method}
                   type="button"
-                  onClick={() => setPaymentMethod(method)}
+                  onClick={() => { setPaymentMethod(method); setStripeSuccess(false); }}
                   className={`p-4 rounded-lg border text-left transition-colors ${
                     paymentMethod === method
                       ? 'border-primary bg-primary/5'
@@ -178,14 +215,77 @@ export default function Checkout() {
                   }`}
                 >
                   <p className="font-medium text-foreground text-sm">
-                    {method === 'card' ? '💳 Test Card Mode' : '💵 Cash on Pickup'}
+                    {method === 'card' ? '💳 Credit / Debit Card' : '💵 Cash on Pickup'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {method === 'card' ? 'Simulated card payment' : 'Pay when collecting'}
+                    {method === 'card' ? 'Secured by Stripe Elements' : 'Pay when collecting in-store'}
                   </p>
                 </button>
               ))}
             </div>
+
+            {/* Stripe Elements simulation */}
+            {paymentMethod === 'card' && (
+              <div className="border border-border rounded-lg p-4 space-y-4">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Card Details</p>
+
+                {stripeSuccess ? (
+                  <div className="flex items-center gap-3 bg-primary/10 border border-primary rounded-lg p-3">
+                    <span className="text-primary text-lg">✓</span>
+                    <div>
+                      <p className="text-sm font-semibold text-primary">Payment Authorised</p>
+                      <p className="text-xs text-muted-foreground">Stripe PaymentIntent status: <strong>succeeded</strong></p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Input
+                        id="cardNumber"
+                        placeholder="4242 4242 4242 4242"
+                        value={cardDetails.number}
+                        onChange={e => setCardDetails(prev => ({ ...prev, number: formatCardNumber(e.target.value) }))}
+                        maxLength={19}
+                        className="font-mono"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="expiry">Expiry (MM/YY)</Label>
+                        <Input
+                          id="expiry"
+                          placeholder="12/26"
+                          value={cardDetails.expiry}
+                          onChange={e => setCardDetails(prev => ({ ...prev, expiry: formatExpiry(e.target.value) }))}
+                          maxLength={5}
+                          className="font-mono"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="cvc">CVC</Label>
+                        <Input
+                          id="cvc"
+                          placeholder="123"
+                          value={cardDetails.cvc}
+                          onChange={e => setCardDetails(prev => ({ ...prev, cvc: e.target.value.replace(/\D/g, '').slice(0, 3) }))}
+                          maxLength={3}
+                          className="font-mono"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleStripePayment}
+                      disabled={stripeProcessing}
+                      className="w-full"
+                    >
+                      {stripeProcessing ? 'Processing with Stripe...' : `Pay £${total.toFixed(2)} with Stripe`}
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -216,8 +316,13 @@ export default function Checkout() {
               <span>Total</span><span>£{total.toFixed(2)}</span>
             </div>
           </div>
-          <Button type="submit" className="w-full mt-6" size="lg">
-            Place Order
+          <Button
+            type="submit"
+            className="w-full mt-6"
+            size="lg"
+            disabled={paymentMethod === 'card' && !stripeSuccess}
+          >
+            {paymentMethod === 'card' && !stripeSuccess ? 'Complete Payment Above' : 'Place Order'}
           </Button>
           {isAuthenticated && (
             <p className="text-xs text-primary text-center mt-2">

@@ -1,3 +1,7 @@
+import buckethat from '@/assets/buckethat.jpeg';
+import cashmere from '@/assets/cashmere.webp';
+import orglinendress from '@/assets/orglinendress.jpeg';
+import tote from '@/assets/tote.jpeg';
 export interface Product {
   id: string;
   name: string;
@@ -9,6 +13,7 @@ export interface Product {
   sizes: string[];
   stock: number;
   color: string;
+  image?: string;
   estimatedDelivery: string;
   clickCollectAvailable: boolean;
 }
@@ -25,6 +30,7 @@ export const products: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     stock: 12,
     color: 'hsl(145, 30%, 80%)',
+    image: orglinendress,
     estimatedDelivery: '3-5 business days',
     clickCollectAvailable: true,
   },
@@ -39,6 +45,7 @@ export const products: Product[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     stock: 8,
     color: 'hsl(35, 40%, 85%)',
+    image: cashmere,
     estimatedDelivery: '3-5 business days',
     clickCollectAvailable: true,
   },
@@ -53,6 +60,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     stock: 15,
     color: 'hsl(25, 25%, 75%)',
+    image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=600&auto=format&fit=crop',
     estimatedDelivery: '3-5 business days',
     clickCollectAvailable: true,
   },
@@ -67,6 +75,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 20,
     color: 'hsl(200, 15%, 88%)',
+    image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=600&auto=format&fit=crop',
     estimatedDelivery: '2-4 business days',
     clickCollectAvailable: true,
   },
@@ -81,6 +90,7 @@ export const products: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     stock: 25,
     color: 'hsl(160, 20%, 70%)',
+    image: 'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=600&auto=format&fit=crop',
     estimatedDelivery: '2-4 business days',
     clickCollectAvailable: true,
   },
@@ -95,6 +105,7 @@ export const products: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     stock: 3,
     color: 'hsl(152, 25%, 65%)',
+    image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&auto=format&fit=crop',
     estimatedDelivery: '3-5 business days',
     clickCollectAvailable: false,
   },
@@ -109,6 +120,7 @@ export const products: Product[] = [
     sizes: ['One Size'],
     stock: 18,
     color: 'hsl(30, 35%, 78%)',
+    image: tote,
     estimatedDelivery: '2-4 business days',
     clickCollectAvailable: true,
   },
@@ -123,6 +135,7 @@ export const products: Product[] = [
     sizes: ['S/M', 'L/XL'],
     stock: 0,
     color: 'hsl(215, 20%, 72%)',
+    image: buckethat,
     estimatedDelivery: '5-7 business days',
     clickCollectAvailable: false,
   },

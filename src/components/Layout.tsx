@@ -20,10 +20,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      {/* Top banner */}
-      <div className="verde-gradient text-primary-foreground text-center py-2 px-4 text-sm font-body tracking-wide">
-        🌿 Use code <span className="font-semibold">WELCOME10</span> for 10% off your first order — Online & In-Store
-      </div>
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">

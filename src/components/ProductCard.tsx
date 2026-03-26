@@ -22,12 +22,21 @@ export default function ProductCard({ product }: { product: Product }) {
     <Link to={`/product/${product.id}`} className="group block verde-card-hover">
       <div className="relative overflow-hidden rounded-lg mb-3">
         <div
-          className="aspect-[3/4] flex items-center justify-center"
+          className="aspect-[3/4] flex items-center justify-center overflow-hidden"
           style={{ backgroundColor: product.color }}
         >
-          <span className="font-heading text-lg text-foreground/60 text-center px-4">
-            {product.name}
-          </span>
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <span className="font-heading text-lg text-foreground/60 text-center px-4">
+              {product.name}
+            </span>
+          )}
         </div>
         {!inStock && (
           <div className="absolute inset-0 bg-foreground/40 flex items-center justify-center">
