@@ -17,6 +17,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
     <meta property="og:title" content="Verde Boutique | Sustainable Style">
+    <script>
+      // GitHub Pages SPA redirect — restore URL from query param set by 404.html
+      (function(l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          });
+          window.history.replaceState(
+            null, null,
+            l.pathname.slice(0, -1) + decoded[0] +
+            (decoded[1] ? '?' + decoded[1] : '') +
+            l.hash
+          );
+        }
+      }(window.location));
+    </script>
   <meta name="twitter:title" content="Verde Boutique | Sustainable Style">
   <meta property="og:description" content="Verde Boutique — Sustainable Fashion Seamlessly Connected. Shop eco-friendly fashion online or visit our boutique locations.">
   <meta name="twitter:description" content="Verde Boutique — Sustainable Fashion Seamlessly Connected. Shop eco-friendly fashion online or visit our boutique locations.">
